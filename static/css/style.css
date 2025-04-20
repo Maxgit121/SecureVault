@@ -1,0 +1,81 @@
+/* Custom styles for Password Manager */
+
+/* Password strength indicator */
+.password-strength {
+    height: 5px;
+    margin-top: 5px;
+    border-radius: 2px;
+    transition: all 0.3s ease;
+}
+
+.strength-weak {
+    background-color: var(--bs-danger);
+    width: 30%;
+}
+
+.strength-medium {
+    background-color: var(--bs-warning);
+    width: 60%;
+}
+
+.strength-strong {
+    background-color: var(--bs-success);
+    width: 100%;
+}
+
+/* Custom cards */
+.card {
+    border: none;
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    transition: all 0.3s ease;
+}
+
+.card:hover {
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+}
+
+.card-header {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.125);
+    background-color: rgba(0, 0, 0, 0.03);
+}
+
+/* Password field hover effect */
+.password-item:hover {
+    background-color: rgba(0, 0, 0, 0.03);
+}
+
+/* Fix for button focus */
+.btn:focus, .btn:active {
+    box-shadow: none !important;
+    outline: none !important;
+}
+
+/* Fix for form controls with validation */
+.was-validated .form-control:invalid:focus, 
+.form-control.is-invalid:focus {
+    box-shadow: 0 0 0 0.25rem rgba(220, 53, 69, 0.25);
+}
+
+.was-validated .form-control:valid:focus, 
+.form-control.is-valid:focus {
+    box-shadow: 0 0 0 0.25rem rgba(25, 135, 84, 0.25);
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--bs-dark);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--bs-secondary);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--bs-primary);
+}

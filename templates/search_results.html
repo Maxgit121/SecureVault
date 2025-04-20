@@ -1,0 +1,115 @@
+{% extends "layout.html" %}
+
+{% block title %}Search Results{% endblock %}
+
+{% block content %}
+<div class="card shadow-sm">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h5 class="mb-0"><i class="fas fa-search me-2"></i>Search Results</h5>
+        <form method="POST" action="{{ url_for('search') }}" class="d-flex">
+            {{ form.hidden_tag() }}
+            <div class="input-group">
+                {{ form.query(class="form-control", placeholder="Search passwords...", value=query) }}
+                <button class="btn btn-outline-primary" type="submit">
+                    <i class="fas fa-search"></i>
+                </button>
+            </div>
+        </form>
+    </div>
+    <div class="card-body">
+        <div class="mb-4">
+            <h6>Results for: <span class="badge bg-secondary">{{ query }}</span></h6>
+            <p class="text-muted small">Found {{ passwords|length }} results</p>
+        </div>
+        
+        {% if passwords %}
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Title</th>
+                            <th>Username</th>
+                            <th>Website</th>
+                            <th>Category</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for password in passwords %}
+                        <tr>
+                            <td>{{ password.title }}</td>
+                            <td>{{ password.username }}</td>
+                            <td>
+                                {% if password.website %}
+                                    <a href="{{ password.website }}" target="_blank" rel="noopener noreferrer">
+                                        {{ password.website|truncate(30) }}
+                                    </a>
+                                {% else %}
+                                    <span class="text-muted">N/A</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if password.category %}
+                                    <span class="badge bg-primary">{{ password.category.name }}</span>
+                                {% else %}
+                                    <span class="badge bg-secondary">No Category</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <div class="btn-group" role="group">
+                                    <a href="{{ url_for('view_password', password_id=password.id) }}" class="btn btn-sm btn-outline-primary">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+                                    <a href="{{ url_for('edit_password', password_id=password.id) }}" class="btn btn-sm btn-outline-secondary">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <button type="button" class="btn btn-sm btn-outline-danger" 
+                                            data-bs-toggle="modal" data-bs-target="#deleteModal{{ password.id }}">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                                
+                                <!-- Delete Confirmation Modal -->
+                                <div class="modal fade" id="deleteModal{{ password.id }}" tabindex="-1" aria-labelledby="deleteModalLabel{{ password.id }}" aria-hidden="true">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="deleteModalLabel{{ password.id }}">Confirm Delete</h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                Are you sure you want to delete <strong>{{ password.title }}</strong>?
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                                <form action="{{ url_for('delete_password', password_id=password.id) }}" method="POST">
+                                                    <button type="submit" class="btn btn-danger">Delete</button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div class="text-center py-5">
+                <i class="fas fa-search fa-4x text-muted mb-3"></i>
+                <h5>No results found</h5>
+                <p class="text-muted">No passwords matching "{{ query }}" were found.</p>
+                <a href="{{ url_for('dashboard') }}" class="btn btn-primary mt-2">
+                    <i class="fas fa-arrow-left me-1"></i>Back to Dashboard
+                </a>
+            </div>
+        {% endif %}
+    </div>
+    <div class="card-footer text-center">
+        <a href="{{ url_for('dashboard') }}" class="btn btn-secondary">
+            <i class="fas fa-arrow-left me-1"></i>Back to Dashboard
+        </a>
+    </div>
+</div>
+{% endblock %}

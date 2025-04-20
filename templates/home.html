@@ -1,0 +1,65 @@
+{% extends "layout.html" %}
+
+{% block title %}Home{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8 text-center">
+        <div class="card shadow-lg mb-5">
+            <div class="card-body p-5">
+                <h1 class="display-4 mb-4">
+                    <i class="fas fa-lock text-primary me-3"></i>Secure Password Manager
+                </h1>
+                <p class="lead mb-4">
+                    Store, manage, and access your passwords securely in one place.
+                </p>
+                <hr class="my-4">
+                <div class="d-grid gap-3 d-md-flex justify-content-md-center">
+                    {% if current_user.is_authenticated %}
+                        <a href="{{ url_for('dashboard') }}" class="btn btn-primary btn-lg">
+                            <i class="fas fa-tachometer-alt me-2"></i>Go to Dashboard
+                        </a>
+                    {% else %}
+                        <a href="{{ url_for('login') }}" class="btn btn-primary btn-lg">
+                            <i class="fas fa-sign-in-alt me-2"></i>Login
+                        </a>
+                        <a href="{{ url_for('register') }}" class="btn btn-outline-primary btn-lg">
+                            <i class="fas fa-user-plus me-2"></i>Register
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <div class="row g-4 mb-5">
+            <div class="col-md-4">
+                <div class="card h-100 shadow">
+                    <div class="card-body text-center">
+                        <i class="fas fa-shield-alt fa-3x text-primary mb-3"></i>
+                        <h5 class="card-title">Secure Storage</h5>
+                        <p class="card-text">Your passwords are encrypted and stored securely in a local database.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card h-100 shadow">
+                    <div class="card-body text-center">
+                        <i class="fas fa-folder-open fa-3x text-primary mb-3"></i>
+                        <h5 class="card-title">Organize</h5>
+                        <p class="card-text">Categorize and organize your passwords for easy access and management.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card h-100 shadow">
+                    <div class="card-body text-center">
+                        <i class="fas fa-search fa-3x text-primary mb-3"></i>
+                        <h5 class="card-title">Quick Search</h5>
+                        <p class="card-text">Quickly find the passwords you need with our built-in search functionality.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

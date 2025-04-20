@@ -1,0 +1,187 @@
+{% extends "layout.html" %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+<div class="row">
+    <!-- Sidebar with Categories -->
+    <div class="col-md-3 mb-4">
+        <div class="card shadow-sm">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0"><i class="fas fa-folder me-2"></i>Categories</h5>
+                <a href="#" data-bs-toggle="modal" data-bs-target="#addCategoryModal" class="btn btn-sm btn-outline-primary">
+                    <i class="fas fa-plus"></i>
+                </a>
+            </div>
+            <div class="list-group list-group-flush">
+                <a href="{{ url_for('dashboard') }}" class="list-group-item list-group-item-action 
+                   {% if not current_category %}active{% endif %}">
+                    <i class="fas fa-list me-2"></i>All Passwords
+                </a>
+                {% for category in categories %}
+                <a href="{{ url_for('filter_by_category', category_id=category.id) }}" 
+                   class="list-group-item list-group-item-action d-flex justify-content-between align-items-center
+                   {% if current_category and current_category.id == category.id %}active{% endif %}">
+                    <span><i class="fas fa-folder me-2"></i>{{ category.name }}</span>
+                    <span class="badge bg-primary rounded-pill">
+                        {{ category.passwords|length }}
+                    </span>
+                </a>
+                {% endfor %}
+            </div>
+        </div>
+        
+        <!-- Search Form -->
+        <div class="card shadow-sm mt-4">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="fas fa-search me-2"></i>Search</h5>
+            </div>
+            <div class="card-body">
+                <form method="POST" action="{{ url_for('search') }}">
+                    {{ search_form.hidden_tag() }}
+                    <div class="input-group">
+                        {{ search_form.query(class="form-control", placeholder="Search passwords...") }}
+                        <button class="btn btn-outline-primary" type="submit">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content - Password List -->
+    <div class="col-md-9">
+        <div class="card shadow-sm">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">
+                    {% if current_category %}
+                        <i class="fas fa-folder me-2"></i>{{ current_category.name }}
+                    {% else %}
+                        <i class="fas fa-key me-2"></i>All Passwords
+                    {% endif %}
+                </h5>
+                <a href="{{ url_for('add_password') }}" class="btn btn-primary">
+                    <i class="fas fa-plus me-1"></i>Add Password
+                </a>
+            </div>
+            <div class="card-body">
+                {% if passwords %}
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Title</th>
+                                    <th>Username</th>
+                                    <th>Website</th>
+                                    <th>Category</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for password in passwords %}
+                                <tr>
+                                    <td>{{ password.title }}</td>
+                                    <td>{{ password.username }}</td>
+                                    <td>
+                                        {% if password.website %}
+                                            <a href="{{ password.website }}" target="_blank" rel="noopener noreferrer">
+                                                {{ password.website|truncate(30) }}
+                                            </a>
+                                        {% else %}
+                                            <span class="text-muted">N/A</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if password.category %}
+                                            <span class="badge bg-primary">{{ password.category.name }}</span>
+                                        {% else %}
+                                            <span class="badge bg-secondary">No Category</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <div class="btn-group" role="group">
+                                            <a href="{{ url_for('view_password', password_id=password.id) }}" class="btn btn-sm btn-outline-primary">
+                                                <i class="fas fa-eye"></i>
+                                            </a>
+                                            <a href="{{ url_for('edit_password', password_id=password.id) }}" class="btn btn-sm btn-outline-secondary">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
+                                            <button type="button" class="btn btn-sm btn-outline-danger" 
+                                                    data-bs-toggle="modal" data-bs-target="#deleteModal{{ password.id }}">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </div>
+                                        
+                                        <!-- Delete Confirmation Modal -->
+                                        <div class="modal fade" id="deleteModal{{ password.id }}" tabindex="-1" aria-labelledby="deleteModalLabel{{ password.id }}" aria-hidden="true">
+                                            <div class="modal-dialog">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <h5 class="modal-title" id="deleteModalLabel{{ password.id }}">Confirm Delete</h5>
+                                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        Are you sure you want to delete <strong>{{ password.title }}</strong>?
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                                        <form action="{{ url_for('delete_password', password_id=password.id) }}" method="POST">
+                                                            <button type="submit" class="btn btn-danger">Delete</button>
+                                                        </form>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <div class="text-center py-5">
+                        <i class="fas fa-lock fa-4x text-muted mb-3"></i>
+                        <h5>No passwords found</h5>
+                        <p class="text-muted">
+                            {% if current_category %}
+                                No passwords in this category yet.
+                            {% else %}
+                                You haven't added any passwords yet.
+                            {% endif %}
+                        </p>
+                        <a href="{{ url_for('add_password') }}" class="btn btn-primary mt-2">
+                            <i class="fas fa-plus me-1"></i>Add Password
+                        </a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Category Modal -->
+<div class="modal fade" id="addCategoryModal" tabindex="-1" aria-labelledby="addCategoryModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addCategoryModalLabel">Add Category</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form action="{{ url_for('add_category') }}" method="POST">
+                <div class="modal-body">
+                    {{ form.hidden_tag() if form is defined }}
+                    <div class="mb-3">
+                        <label for="categoryName" class="form-label">Category Name</label>
+                        <input type="text" class="form-control" id="categoryName" name="name" required>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Add Category</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
